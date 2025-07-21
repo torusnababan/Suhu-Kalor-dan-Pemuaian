@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suhu, Kalor, dan Pemuaian</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+        }
+        .header-main-title {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        h1 {
+            color: #0056b3;
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .author-info {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .author-info p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .author-info p:first-child {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+        .header-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            z-index: 10;
+        }
+        .left-header-image {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            z-index: 10;
+        }
+        h2 {
+            color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .question {
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .question p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        #timeLimitDisplay {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 50px;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: none;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .cooldown-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #d9534f;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #d9534f;
+            border-radius: 5px;
+            background-color: #ffe0e0;
+        }
+        @media (max-width: 600px) {
+            .header-image, .left-header-image {
+                position: static;
+                margin: 10px auto;
+                display: block;
+            }
+            .header-main-title, .author-info {
+                text-align: center;
+            }
+            .container {
+                position: static;
+            }
+            #timeLimitDisplay {
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-main-title">
+            <h1>Suhu, Kalor, dan Pemuaian</h1>
+        </div>
+        <div class="author-info">
+            <p>By. Torus Manuntun Nababan, S.Pd.,M.Pd</p>
+            <p>(Pengembang Soal Kuis)</p>
+        </div>
+        <img src="logo.png" alt="Foto Torus Manuntun Nababan, S.Pd.,M.Pd" class="header-image">
+        <img src="jas.jpg" alt="Ilustrasi Jas" class="left-header-image">
+
+        <p id="timeLimitDisplay">Waktu pengerjaan: <span id="timeLimit">40</span> menit</p>
+        <div id="timer">Waktu tersisa: 40:00</div>
+
+        <form id="quizForm">
+            <h2>Identitas Siswa</h2>
+            <div class="form-group">
+                <label for="sekolah">Nama Sekolah:</label>
+                <input type="text" id="sekolah" name="sekolah" required>
+            </div>
+            <div class="form-group">
+                <label for="nama">Nama Siswa:</label>
+                <input type="text" id="nama" name="nama" required>
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" name="kelas" required>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <select id="semester" name="semester" required>
+                    <option value="">Pilih Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tahunAjaran">Tahun Ajaran:</label>
+                <input type="text" id="tahunAjaran" name="tahunAjaran" placeholder="Contoh: 2024/2025" required>
+            </div>
+
+            <hr>
+
+            <h2>Soal Kuis</h2>
+            <div id="questionsContainer">
+            </div>
+
+            <button type="submit">Selesai Kuis</button>
+        </form>
+
+        <div id="results">
+            <h2>Hasil Kuis</h2>
+            <p><strong>Nama Siswa:</strong> <span id="resultNama"></span></p>
+            <p><strong>Skor Anda:</strong> <span id="score"></span></p>
+            <p id="message"></p>
+            <h3>Detail Jawaban:</h3>
+            <div id="answerDetails">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Suhu (14 soal)
+            {
+                topic: "Suhu",
+                question: "Alat untuk mengukur suhu adalah...",
+                options: ["Meteran", "Termometer", "Stopwatch", "Timbangan"],
+                answer: "Termometer"
+            },
+            {
+                topic: "Suhu",
+                question: "Satuan suhu dalam Sistem Internasional (SI) adalah...",
+                options: ["Celcius", "Fahrenheit", "Reamur", "Kelvin"],
+                answer: "Kelvin"
+            },
+            {
+                topic: "Suhu",
+                question: "Titik beku air pada skala Celcius adalah...",
+                options: ["0°C", "100°C", "32°C", "273 K"],
+                answer: "0°C"
+            },
+            {
+                topic: "Suhu",
+                question: "Titik didih air pada skala Celcius adalah...",
+                options: ["0°C", "100°C", "212°F", "373 K"],
+                answer: "100°C"
+            },
+            {
+                topic: "Suhu",
+                question: "Suhu tubuh normal manusia sekitar...",
+                options: ["0°C", "37°C", "100°C", "-5°C"],
+                answer: "37°C"
+            },
+            {
+                topic: "Suhu",
+                question: "Termometer klinis digunakan untuk mengukur suhu...",
+                options: ["Udara", "Air", "Tubuh", "Tanah"],
+                answer: "Tubuh"
+            },
+            {
+                topic: "Suhu",
+                question: "Skala suhu yang memiliki titik beku air 32 derajat adalah...",
+                options: ["Celcius", "Kelvin", "Reamur", "Fahrenheit"],
+                answer: "Fahrenheit"
+            },
+            {
+                topic: "Suhu",
+                question: "Pada skala Kelvin, 0 K disebut juga...",
+                options: ["Titik beku", "Titik didih", "Suhu kamar", "Nol mutlak"],
+                answer: "Nol mutlak"
+            },
+            {
+                topic: "Suhu",
+                question: "Termometer air raksa menggunakan prinsip...",
+                options: ["Perubahan warna", "Pemuaian zat cair", "Perubahan massa", "Pemuaian zat padat"],
+                answer: "Pemuaian zat cair"
+            },
+            {
+                topic: "Suhu",
+                question: "Jika suhu suatu benda meningkat, maka partikel-partikelnya bergerak...",
+                options: ["Lebih lambat", "Lebih cepat", "Diam", "Tidak tentu"],
+                answer: "Lebih cepat"
+            },
+            {
+                topic: "Suhu",
+                question: "Perasaan panas atau dingin suatu benda disebut...",
+                options: ["Energi", "Kalor", "Suhu", "Massa"],
+                answer: "Suhu"
+            },
+            {
+                topic: "Suhu",
+                question: "Angka 273 pada perubahan skala Celcius ke Kelvin menunjukkan...",
+                options: ["Titik beku air", "Titik didih air", "Konstanta konversi", "Perbedaan volume"],
+                answer: "Konstanta konversi"
+            },
+            {
+                topic: "Suhu",
+                question: "Suhu 50°C setara dengan ... K.",
+                options: ["50", "273", "323", "373"],
+                answer: "323" // 50 + 273 = 323
+            },
+            {
+                topic: "Suhu",
+                question: "Termometer alkohol cocok untuk mengukur suhu rendah karena alkohol...",
+                options: ["Tidak membeku pada suhu rendah", "Mudah menguap", "Berwarna", "Lebih berat dari air raksa"],
+                answer: "Tidak membeku pada suhu rendah"
+            },
+
+            // Kalor (13 soal)
+            {
+                topic: "Kalor",
+                question: "Energi panas yang berpindah dari benda bersuhu tinggi ke benda bersuhu rendah disebut...",
+                options: ["Suhu", "Massa", "Kalor", "Volume"],
+                answer: "Kalor"
+            },
+            {
+                topic: "Kalor",
+                question: "Satuan kalor dalam Sistem Internasional (SI) adalah...",
+                options: ["Kalori", "Joule", "Watt", "Derajat Celcius"],
+                answer: "Joule"
+            },
+            {
+                topic: "Kalor",
+                question: "Proses perpindahan kalor melalui zat perantara tanpa disertai perpindahan partikel zat disebut...",
+                options: ["Konveksi", "Radiasi", "Konduksi", "Absorpsi"],
+                answer: "Konduksi"
+            },
+            {
+                topic: "Kalor",
+                question: "Contoh peristiwa konduksi adalah...",
+                options: ["Air mendidih", "Sinar matahari", "Memegang sendok panas", "Angin darat dan laut"],
+                answer: "Memegang sendok panas"
+            },
+            {
+                topic: "Kalor",
+                question: "Perpindahan kalor yang disertai perpindahan partikel zat disebut...",
+                options: ["Konduksi", "Radiasi", "Konveksi", "Transmisi"],
+                answer: "Konveksi"
+            },
+            {
+                topic: "Kalor",
+                question: "Contoh peristiwa konveksi adalah...",
+                options: ["Setrika panas", "Api unggun menghangatkan tubuh", "Memasak air", "Matahari menyinari bumi"],
+                answer: "Memasak air"
+            },
+            {
+                topic: "Kalor",
+                question: "Perpindahan kalor tanpa melalui zat perantara disebut...",
+                options: ["Konduksi", "Konveksi", "Radiasi", "Abduksi"],
+                answer: "Radiasi"
+            },
+            {
+                topic: "Kalor",
+                question: "Contoh peristiwa radiasi adalah...",
+                options: ["Pemanasan setrika", "Air mendidih di panci", "Berjemur di bawah sinar matahari", "Panas knalpot motor"],
+                answer: "Berjemur di bawah sinar matahari"
+            },
+            {
+                topic: "Kalor",
+                question: "Bahan yang mudah menghantarkan kalor disebut...",
+                options: ["Isolator", "Konduktor", "Semikonduktor", "Resistor"],
+                answer: "Konduktor"
+            },
+            {
+                topic: "Kalor",
+                question: "Bahan yang sulit menghantarkan kalor disebut...",
+                options: ["Konduktor", "Isolator", "Semikonduktor", "Kapasitor"],
+                answer: "Isolator"
+            },
+            {
+                topic: "Kalor",
+                question: "Air memiliki kalor jenis yang ... daripada logam.",
+                options: ["Sama", "Lebih kecil", "Lebih besar", "Tidak relevan"],
+                answer: "Lebih besar"
+            },
+            {
+                topic: "Kalor",
+                question: "Ketika es mencair, es menyerap...",
+                options: ["Massa", "Suhu", "Kalor", "Berat"],
+                answer: "Kalor"
+            },
+            {
+                topic: "Kalor",
+                question: "Rumus untuk menghitung kalor yang dibutuhkan untuk menaikkan suhu suatu benda adalah Q = m × c × ΔT, di mana 'c' adalah...",
+                options: ["Massa", "Suhu akhir", "Kalor jenis", "Perubahan suhu"],
+                answer: "Kalor jenis"
+            },
+
+            // Pemuaian (13 soal)
+            {
+                topic: "Pemuaian",
+                question: "Peristiwa bertambahnya ukuran benda karena pengaruh perubahan suhu disebut...",
+                options: ["Penyusutan", "Penguapan", "Pemuaian", "Pembekuan"],
+                answer: "Pemuaian"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Rel kereta api diberi celah di antara sambungannya untuk menghindari...",
+                options: ["Karat", "Patah saat dingin", "Bengkok saat panas", "Gesekan"],
+                answer: "Bengkok saat panas"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Pemuaian terjadi pada zat...",
+                options: ["Padat saja", "Cair saja", "Gas saja", "Padat, cair, dan gas"],
+                answer: "Padat, cair, dan gas"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Termometer bekerja berdasarkan prinsip pemuaian...",
+                options: ["Zat padat", "Zat cair", "Zat gas", "Semua zat"],
+                answer: "Zat cair"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Jendela kaca yang dipasang tidak terlalu pas di bingkainya karena...",
+                options: ["Agar mudah dibuka", "Untuk menghindari pecah saat memuai", "Sebagai hiasan", "Mengurangi berat"],
+                answer: "Untuk menghindari pecah saat memuai"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Pemuaian panjang terjadi pada benda berbentuk...",
+                options: ["Kubus", "Bola", "Batang", "Cairan"],
+                answer: "Batang"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Koefisien muai panjang adalah ukuran seberapa besar suatu benda memuai per...",
+                options: ["Kilogram", "Derajat Celcius", "Meter persegi", "Liter"],
+                answer: "Derajat Celcius"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Pada saat memanaskan air, permukaan air dalam gelas ukur akan...",
+                options: ["Menurun", "Tetap", "Menaik", "Membeku"],
+                answer: "Menaik"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Kabel listrik dipasang agak kendur untuk menghindari putus saat...",
+                options: ["Panas", "Dingin", "Hujan", "Berangin"],
+                answer: "Dingin"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Bimetal adalah dua logam yang berbeda koefisien muai panjangnya yang digabungkan, digunakan dalam...",
+                options: ["Sakelar otomatis", "Termos", "Setrika", "Jam dinding"],
+                answer: "Sakelar otomatis"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Volume suatu zat akan bertambah jika...",
+                options: ["Suhunya menurun", "Diberi tekanan", "Suhunya meningkat", "Didinginkan"],
+                answer: "Suhunya meningkat"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Pemuaian gas terjadi pada...",
+                options: ["Balon yang ditiup", "Ban motor yang kempis", "Balon udara panas", "Suhu ruangan dingin"],
+                answer: "Balon udara panas"
+            },
+            {
+                topic: "Pemuaian",
+                question: "Semakin besar kenaikan suhu, semakin besar pula...",
+                options: ["Massa benda", "Pemuaian benda", "Kerapatan benda", "Warna benda"],
+                answer: "Pemuaian benda"
+            }
+        ];
+
+        const timeLimitInMinutes = 40;
+        let timeLeft = timeLimitInMinutes * 60; // seconds
+        let timerInterval;
+
+        const quizForm = document.getElementById('quizForm');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const timerDisplay = document.getElementById('timer');
+        const resultsDiv = document.getElementById('results');
+        const resultNama = document.getElementById('resultNama');
+        const scoreDisplay = document.getElementById('score');
+        const messageDisplay = document.getElementById('message');
+        const answerDetailsDiv = document.getElementById('answerDetails');
+
+        // Durasi cooldown: 3 jam dalam milidetik
+        const cooldownDuration = 3 * 60 * 60 * 1000;
+        const lastQuizCompletionKey = 'lastQuizCompletionTime';
+
+        // Fungsi untuk mengacak array (algoritma Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Fungsi untuk menghasilkan dan menampilkan pertanyaan
+        function generateQuestions() {
+            // Ensure there are exactly 40 questions after potential filtering/selection
+            if (questions.length !== 40) {
+                console.warn("Jumlah soal tidak sama dengan 40. Pastikan ada 40 soal.");
+                // You might want to implement logic here to select 40 random questions if you have more
+                // For now, we'll proceed with the available questions, but this warning is important.
+            }
+            
+            shuffleArray(questions); // Shuffle all questions
+            questionsContainer.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                const shuffledOptions = [...q.options];
+                shuffleArray(shuffledOptions);
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${q.question}</p>
+                    <div class="options">
+                        ${shuffledOptions.map((option) => `
+                            <label>
+                                <input type="radio" name="q${index}" value="${option}"> ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+        }
+
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Waktu tersisa: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis! Kuis akan otomatis disubmit.");
+                    quizForm.dispatchEvent(new Event('submit'));
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Penanganan saat formulir disubmit
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            clearInterval(timerInterval);
+
+            let totalScore = 0;
+            const pointsPerCorrect = 100 / questions.length; // Calculate points per question based on total of 40 questions
+            const maxPossibleScore = questions.length * pointsPerCorrect; // 40 * 2.5 = 100
+
+            const answers = {};
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : null;
+                answers[`q${index}`] = userAnswer;
+
+                if (userAnswer === q.answer) {
+                    totalScore += pointsPerCorrect;
+                }
+            });
+
+            // Simpan waktu penyelesaian kuis ke Local Storage
+            localStorage.setItem(lastQuizCompletionKey, Date.now());
+
+            // Tampilkan hasil
+            resultNama.textContent = document.getElementById('nama').value;
+            scoreDisplay.textContent = `${totalScore.toFixed(2)} / ${maxPossibleScore.toFixed(2)}`;
+
+            // Tentukan pesan berdasarkan skor
+            if (totalScore >= 70) {
+                messageDisplay.textContent = "Selamat Anda Pemenang";
+                messageDisplay.style.color = "green";
+            } else {
+                messageDisplay.textContent = "Anda Belum Beruntung, Belajar Lagi Ya";
+                messageDisplay.style.color = "red";
+            }
+
+            // Tampilkan detail jawaban
+            answerDetailsDiv.innerHTML = '';
+            questions.forEach((q, index) => {
+                const userAnswer = answers[`q${index}`];
+                const detailDiv = document.createElement('p');
+                let answerStatusClass = '';
+                let userAnswerText = userAnswer !== null ? userAnswer : 'Tidak dijawab';
+
+                if (userAnswer === q.answer) {
+                    answerStatusClass = 'correct';
+                } else if (userAnswer !== null) {
+                    answerStatusClass = 'incorrect';
+                } else {
+                    answerStatusClass = '';
+                }
+
+                detailDiv.innerHTML = `
+                    <strong>${index + 1}. ${q.question}</strong><br>
+                    Jawaban Anda: <span class="${answerStatusClass}">
+                        ${userAnswerText}
+                    </span><br>
+                    Kunci Jawaban: <span class="correct">${q.answer}</span>
+                `;
+                answerDetailsDiv.appendChild(detailDiv);
+            });
+
+            quizForm.style.display = 'none';
+            resultsDiv.style.display = 'block';
+        });
+
+        // Inisialisasi kuis dan cek cooldown saat halaman dimuat
+        window.onload = function() {
+            const lastCompletionTime = localStorage.getItem(lastQuizCompletionKey);
+            if (lastCompletionTime) {
+                const timeElapsed = Date.now() - parseInt(lastCompletionTime);
+                if (timeElapsed < cooldownDuration) {
+                    const remainingTime = cooldownDuration - timeElapsed;
+                    const minutes = Math.floor(remainingTime / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                    quizForm.style.display = 'none';
+                    timerDisplay.style.display = 'none';
+                    document.getElementById('timeLimitDisplay').style.display = 'none';
+                    const cooldownMessageDiv = document.createElement('div');
+                    cooldownMessageDiv.classList.add('cooldown-message');
+                    cooldownMessageDiv.innerHTML = `
+                        Anda telah menyelesaikan kuis ini. <br>
+                        Silakan coba lagi dalam **${minutes.toString().padStart(2, '0')} menit dan ${seconds.toString().padStart(2, '0')} detik**.
+                    `;
+                    document.querySelector('.container').insertBefore(cooldownMessageDiv, document.getElementById('quizForm'));
+                    return;
+                }
+            }
+            // Jika tidak ada cooldown atau cooldown sudah berakhir, inisialisasi kuis
+            generateQuestions();
+            startTimer();
+        };
+    </script>
+</body>
+</html>
